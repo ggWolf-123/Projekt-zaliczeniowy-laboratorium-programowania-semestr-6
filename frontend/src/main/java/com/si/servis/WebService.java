@@ -35,10 +35,32 @@ public class WebService {
         body.put("image", image);
 
         ImageResponse result = config.post()
-                .uri("/api/v1/gemini/")
+                .uri("/api/v1/gemini/plate")
                 .bodyValue(body)
                 .retrieve()
                 .bodyToFlux(ImageResponse.class)
+                .blockFirst();
+        return result;
+    }
+    public MathResponse isValidMath(String sentence, byte[] imageMath, String type) {
+
+        Map<String, Object> body = new HashMap<>();
+        if(type=="both"){
+            body.put("imageMath", imageMath);
+            body.put("sentenceToCheckMath", sentence);
+        } else if (type=="text") {
+            body.put("imageMath", null);
+            body.put("sentenceToCheckMath", sentence);
+        } else if (type=="image") {
+            body.put("imageMath", imageMath);
+            body.put("sentenceToCheckMath", " ");
+        }
+
+        MathResponse result = config.post()
+                .uri("/api/v1/gemini/math")
+                .bodyValue(body)
+                .retrieve()
+                .bodyToFlux(MathResponse.class)
                 .blockFirst();
         return result;
     }

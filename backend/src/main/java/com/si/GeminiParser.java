@@ -30,6 +30,16 @@ public class GeminiParser {
 
         return mapper.readValue(text, ImageResponse.class);
     }
+    public MathResponse paresMathResponse(String json) throws JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String text = getText(json).replace("```json", "")
+                .replace("```", "")
+                .trim();
+
+        return mapper.readValue(text, MathResponse.class);
+    }
 
     private String getText(String json) throws JsonProcessingException {
 

@@ -13,7 +13,7 @@ public class GeminiService {
 
     private final HttpClient client;
     private final GeminiParser parser;
-    private final String API_KEY = "AIzaSyD5KlHZlJqq3S2VvNPeAYO1Cs3trodiE58";
+    private final String API_KEY = "AIzaSyDaMZBym40nEBfKyCthZmt8-ZKp4u3GJxw";
     private final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=" + API_KEY;
     private final String TEXT_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=" + API_KEY;
     private final String IMAGE_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
@@ -90,6 +90,8 @@ public class GeminiService {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("STATUS = " + response.statusCode());
+            System.out.println("BODY = ");
             System.out.println(response.body());
             if (response.statusCode() == 200) {
                 return parser.paresImageResponse(response.body());
@@ -97,5 +99,69 @@ public class GeminiService {
         } catch (Exception e) {
         }
         return new ImageResponse(false, "Błąd.");
+    }
+    public MathResponse isCorrectMath(byte[] image, String text) {
+
+        String base64Image;
+        String jsonPayload;
+        if (image!=null) {
+            base64Image = Base64.getEncoder().encodeToString(image);
+            jsonPayload =
+                    """
+                            {
+                              "contents": [
+                                {
+                                  "parts": [
+                                    {
+                                      "text": "Rozwiąż zadanie matematyczne przedstawione ci na obrazku (jeśli dostałeś plik graficzny). Jeśli nie dostałeś obrazka to wykonaj to zadanie : %s. Jeśli dostałeś zadanie w formie obrazka oraz {%s} nie jest puste to wykonaj zadanie z obrazka zgodnie z treścią w {}.  
+                                      Zwróć odpowiedź wyłącznie w formacie JSON: { 'found':true/false, 'answer' : 'odpowiedź na zadanie matematyczne(w miarę możliwości któtka) lub null'} Jeśli nie jesteś pewny - ustaw found=false;"
+                                    },
+                                    {
+                                        "inline_data" : {
+                                            "mime_type" : "image/jpeg",
+                                            "data" : "%s"
+                                        }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                            """.formatted(text,text, base64Image);
+
+        }else{
+            jsonPayload =
+                    """
+                            {
+                              "contents": [
+                                {
+                                  "parts": [
+                                    {
+                                      "text": "Rozwiąż zadanie matematyczne: %s.
+                                      Zwróć odpowiedź wyłącznie w formacie JSON: { 'found':true/false, 'answer' : 'odpowiedź na zadanie matematyczne(w miarę możliwości któtka) lub null'} Jeśli nie jesteś pewny - ustaw found=false;"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                            """.formatted(text);
+
+        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(IMAGE_API_URL))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("STATUS = " + response.statusCode());
+            System.out.println("BODY = ");
+            System.out.println(response.body());
+            if (response.statusCode() == 200) {
+                return parser.paresMathResponse(response.body());
+            }
+        } catch (Exception e) {
+        }
+        return new MathResponse(false, "Błąd");
     }
 }

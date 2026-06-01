@@ -63,7 +63,7 @@ public class GrammarCheckTab extends VerticalLayout {
             } else if (result.get("isCorrect").equals("No")) {
                 message = "Zdanie jest nie poprawne. Poprawna forma to: " + result.get("correctSentence");
             } else {
-                message = " Błąd seerwera";
+                message = " Błąd serwera";
             }
             Notification notification = new Notification(message, 3000);
             notification.setPosition(Notification.Position.BOTTOM_CENTER);

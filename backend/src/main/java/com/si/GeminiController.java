@@ -19,10 +19,17 @@ public class GeminiController {
         return service.getMessage(language,sentence);
     }
 
-    @PostMapping("/")
+    @PostMapping("/plate")
     public ImageResponse isValid(@RequestBody ImageRequest request) {
 
+        System.out.println("Plate endpoint called");
         return service.isCorrect(request.getImage(), request.getNumber());
+    }
+    @PostMapping("/math")
+    public MathResponse isValid(@RequestBody MathRequest request) {
+
+        System.out.println("Math endpoint called");
+        return service.isCorrectMath(request.getImageMath(), request.getSenteceToCheckMath());
     }
 
 }
