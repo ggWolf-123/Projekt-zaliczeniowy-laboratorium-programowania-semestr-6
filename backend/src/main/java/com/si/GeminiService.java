@@ -13,7 +13,7 @@ public class GeminiService {
 
     private final HttpClient client;
     private final GeminiParser parser;
-    private final String API_KEY = "AIzaSyDaMZBym40nEBfKyCthZmt8-ZKp4u3GJxw";
+    private final String API_KEY = "";
     private final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=" + API_KEY;
     private final String TEXT_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=" + API_KEY;
     private final String IMAGE_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
